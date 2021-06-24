@@ -20,14 +20,20 @@ const uint8_t tor2Pin = 4;     // Sensor TOR ZU
 const uint8_t ledPin =  5;     // Onboard-LED
 
 // Globale Variablen
+enum Dimmer { off, dimDown, dimUp, on };
+enum DoorOpenClose { close, halfOpen, open };
+
+Dimmer endAnimation;
+DoorOpenClose tor;
+
 bool tor_status = false; // Fährt der Motor?
 bool nacht = false; // Ist Nacht?
-uint8_t tor = 0; // Tor-Status 0=ZU 1=HALB 2=OFFEN
 bool moving = false; // True sobald er feststellt, dass der Motor fährt (für Zeitfunktion)
 const int torFahrzeit = 15000; // Fahrdauer des Tors
 unsigned long startMillis = 0; // Startzeit des Tores
 const int torTotzeit = 2000; // Pausiert die Sensoren die ersten 2 Sekunden
-uint8_t endAnimation = 0; //Endanimation des Tores 0=AUS 1=Runterdimmen 2=Aufdimmen 
+
+
 
 // Initialize WS2812B-LED-Strip
 class Strip
@@ -98,49 +104,49 @@ void loop() {
   knxRead();
 
   // Wenn der Motor anfängt zu fahren & dies noch nicht registriert wurde
-  if ((tor_status == true) && (moving == false)) {
+  if ((tor_status) && (!moving)) {
     moving = true;
     startMillis = millis();    
   }
 
   // Wenn der Motor fährt
-  if (moving == true) {
+  if (moving) {
     unsigned long currentMillis = millis();
     strip_animation(1);
     if (currentMillis - startMillis >= torTotzeit) {
-      if (tor == 0) {
+      if (tor == close) {
         //Wenn Tor ZU
         moving = false;
-        endAnimation = 1;
-      } else if (tor == 2) {
+        endAnimation = dimDown;
+      } else if (tor == open) {
         //Wenn Tor AUF
         moving = false;
-        endAnimation = 2;
+        endAnimation = dimUp;
       } else if (currentMillis - startMillis >= torFahrzeit) {
         // Wenn Fahrzeit überschritten
         moving = false;
-        endAnimation = 1;
+        endAnimation = dimDown;
       }
     }
   }
 
   // Wenn das Tor fertig gefahren ist
-  if (endAnimation == 1) {
+  if (endAnimation == dimDown) {
     // Tor runterdimmen
     if (strip_animation(3) == 1) {
-      endAnimation = 0;
+      endAnimation = off;
     }
-  } else if (endAnimation == 2) {
+  } else if (endAnimation == dimUp) {
     if (strip_animation(2) == 1) {
-      endAnimation = 0;
+      endAnimation = off;
     }
   }
 
 
  // Nacht-Licht
- if ((moving == false) && (endAnimation == 0) && (tor == 0)) {
+ if ((!moving) && (endAnimation == off) && (tor == close)) {
   // Tor zu und keine Animation aktiv
-  if (nacht == true) {
+  if (nacht) {
     // Nachtlicht aktiv
   } else {
     // Nachtlicht inaktiv
