@@ -21,7 +21,16 @@ void knxRead() {
           digitalWrite(ledPin, HIGH);
         }
         else {
+          // TODO XY
+        }
+      }
+      if (target == "1/6/3") {
+        int received_1_6_3 = telegram->getBool();
+        if (received_1_6_3) {
           digitalWrite(ledPin, LOW);
+        }
+        else {
+          // TODO XY
         }
       }
     }
