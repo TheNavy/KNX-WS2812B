@@ -58,18 +58,23 @@ public:
 
 struct Loop
 {
-  uint8_t currentChild;
-  uint8_t childs;
-  bool timeBased;
-  uint16_t cycles;
-  uint16_t currentTime;
-  Loop(uint8_t totchilds, bool timebased, uint16_t tottime) {currentTime=0;currentChild=0;childs=totchilds;timeBased=timebased;cycles=tottime;}
+  // 0 means endless cycles!
+  uint8_t numberOfCycles;
+  uint8_t currentCycle;
+
+  Loop(uint8_t numberOfCycles) {
+    numberOfCycles = numberOfCycles; 
+    currentCycle = 0;
+  }
 };
 
 Strip strip_0(120, 6, 120, NEO_GRB + NEO_KHZ800);
-struct Loop strip0loop0(3, false, 1);
-struct Loop strip0loop00(1, false, 1);
-struct Loop strip0loop01(1, false, 1);
+struct Loop strip0LoopEndless(0);
+struct Loop strip0LoopOnce(1);
+
+//struct Loop strip0loop0(3, false, 1);
+//struct Loop strip0loop00(1, false, 1);
+//struct Loop strip0loop01(1, false, 1);
 
 void setup() {
   // LED-Pin als Output definieren und ausschalten
@@ -112,7 +117,7 @@ void loop() {
   // Wenn der Motor fährt
   if (moving) {
     unsigned long currentMillis = millis();
-    strip_animation(1);
+    strip_animation(1, strip0LoopEndless);
     if (currentMillis - startMillis >= torTotzeit) {
       if (tor == close) {
         //Wenn Tor ZU
@@ -133,11 +138,11 @@ void loop() {
   // Wenn das Tor fertig gefahren ist
   if (endAnimation == dimDown) {
     // Tor runterdimmen
-    if (strip_animation(3) == 1) {
+    if (strip_animation(3, strip0LoopOnce) == 1) {
       endAnimation = off;
     }
   } else if (endAnimation == dimUp) {
-    if (strip_animation(2) == 1) {
+    if (strip_animation(2, strip0LoopOnce) == 1) {
       endAnimation = off;
     }
   }

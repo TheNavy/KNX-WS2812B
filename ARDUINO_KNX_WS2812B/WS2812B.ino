@@ -7,39 +7,48 @@
  */
 
 // Hauptprogramm - Wählt Animation aus
-uint8_t strip_animation(int animation) {
+
+/**
+ * numCycles = Number of animation cycles. 0 = looping until reset.
+ */
+uint8_t strip_animation(uint8_t animation, struct Loop &loop) {
   uint8_t ret = 0;
+  
   switch(animation) {
     case 0:
-      uint32_t black = strip_0.strip.Color(0, 0, 0);
-      strip_0.strip.fill(black, 0, 120);
-      strip_0.strip.show();      
+      strip0_loop0_reset(); 
+      ret = 1;
       break;
     case 1:
-      strip0_loop01_eff0();
+      //ret = strip0_loop0_eff1();
+	    ret = strip0_loop0_eff1(loop);
       strip_0.strip.show();
       break;
     case 2:
-      ret = strip0_loop00_eff0();
+      //ret = strip0_loop0_eff2();
+	    ret = strip0_loop0_eff2(loop);
       strip_0.strip.show();
       break;
     case 3:
-      ret = strip0_loop0_eff0();
+      //ret = strip0_loop0_eff3();
+	    ret = strip0_loop0_eff3(loop);
       strip_0.strip.show();
       break;
   }
+  /*
   if (ret == 1) {
     ret = 0;
     return 1;    
   }
+  */
 }
 
-uint8_t strip0_loop0_eff0() {
+uint8_t strip0_loop0_eff1(struct Loop &loop) {
     // Strip ID: 0 - Effect: Fade - LEDS: 120
     // Steps: 290 - Delay: 1
     // Colors: 2 (255.0.0, 0.0.0)
     // Options: duration=290, every=1, 
-  if(millis() - strip_0.effStart < 1 * (strip_0.effStep));
+  // if(millis() - strip_0.effStart < 1 * (strip_0.effStep)) return 0x00;
   uint8_t r,g,b;
   double e;
   e = (strip_0.effStep * 1) / (double)290;
@@ -52,16 +61,34 @@ uint8_t strip0_loop0_eff0() {
     else
       strip_0.strip.setPixelColor(j, 0, 0, 0);
   }
-  if(strip_0.effStep >= 290) {strip_0.Reset(); return 1; }
-  else strip_0.effStep++;
+  
+  if(strip_0.effStep >= 290) {
+    if (loop.numberOfCycles > 0) {
+      if (loop.currentCycle >= loop.numberOfCycles) {
+        loop.currentCycle = 0;
+        return 0x01;
+      }
+      else {
+        loop.currentCycle++;
+      }
+    }
+    else {
+      strip_0.effStep = 0;
+    }
+  }
+  else {
+    strip_0.effStep++;
+  }
+
+  return 0x00;
 }
 
-uint8_t strip0_loop00_eff0() {
+uint8_t strip0_loop0_eff2(struct Loop &loop) {
     // Strip ID: 0 - Effect: Fade - LEDS: 120
     // Steps: 240 - Delay: 1
     // Colors: 2 (0.255.0, 255.255.255)
     // Options: duration=240, every=1, 
-  if(millis() - strip_0.effStart < 1 * (strip_0.effStep));
+  // if(millis() - strip_0.effStart < 1 * (strip_0.effStep)) return 0x00;
   uint8_t r,g,b;
   double e;
   e = (strip_0.effStep * 1) / (double)240;
@@ -74,16 +101,34 @@ uint8_t strip0_loop00_eff0() {
     else
       strip_0.strip.setPixelColor(j, 0, 0, 0);
   }
-  if(strip_0.effStep >= 240) {strip_0.Reset(); return 1; }
-  else strip_0.effStep++;
+
+  if(strip_0.effStep >= 240) {
+    if (loop.numberOfCycles > 0) {
+      if (loop.currentCycle >= loop.numberOfCycles) {
+        loop.currentCycle = 0;
+        return 0x01;
+      }
+      else {
+        loop.currentCycle++;
+      }
+    }
+    else {
+      strip_0.effStep = 0;
+    }
+  }
+  else {
+    strip_0.effStep++;
+  }
+
+  return 0x00;
 }
 
-uint8_t strip0_loop01_eff0() {
+uint8_t strip0_loop0_eff3(struct Loop &loop) {
     // Strip ID: 0 - Effect: Rainbow - LEDS: 120
     // Steps: 170 - Delay: 20
     // Colors: 2 (255.0.0, 0.255.0)
     // Options: rainbowlen=120, toLeft=true, 
-  if(millis() - strip_0.effStart < 20 * (strip_0.effStep));
+  // if(millis() - strip_0.effStart < 20 * (strip_0.effStep)) return 0x00;
   float factor1, factor2;
   uint16_t ind;
   for(uint16_t j=0;j<120;j++) {
@@ -99,6 +144,40 @@ uint8_t strip0_loop01_eff0() {
               break;
     }
   }
-  if(strip_0.effStep >= 170) {strip_0.Reset(); return 1; }
-  else strip_0.effStep++;
+
+  if(strip_0.effStep >= 170) {
+    if (loop.numberOfCycles > 0) {
+      if (loop.currentCycle >= loop.numberOfCycles) {
+        loop.currentCycle = 0;
+        return 0x01;
+      }
+      else {
+        loop.currentCycle++;
+      }
+    }
+    else {
+      strip_0.effStep = 0;
+    }
+  }
+  else {
+    strip_0.effStep++;
+  }
+
+  return 0x00;
+}
+
+void strip0_loop0_reset() {
+	
+  // Set black - necessary?
+	strip_0.strip.clear();
+
+  // Reset strip values
+  strip_0.Reset();
+
+	// Keine ahnung ob das benötigt wird
+	/*
+	uint32_t black = strip_0.strip.Color(0, 0, 0);
+    strip_0.strip.fill(black, 0, 120);
+    strip_0.strip.show();    
+	*/
 }
