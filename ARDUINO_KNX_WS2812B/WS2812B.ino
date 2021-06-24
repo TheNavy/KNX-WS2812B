@@ -1,57 +1,23 @@
-#include <Adafruit_NeoPixel.h>
+/*
+ * Der Funktion "strip_animation" könnten folgende Werte übergeben werden:
+ * 0 = LEDs AUS
+ * 1 = Animation RAUF / RUNTER
+ * 2 = Animation TOR AUF
+ * 3 = Animation TOR ZU
+ */
 
-class Strip
-{
-public:
-  uint8_t   effect;
-  uint8_t   effects;
-  uint16_t  effStep;
-  unsigned long effStart;
-  Adafruit_NeoPixel strip;
-  Strip(uint16_t leds, uint8_t pin, uint8_t toteffects, uint16_t striptype) : strip(leds, pin, striptype) {
-    effect = -1;
-    effects = toteffects;
-    Reset();
-  }
-  void Reset(){
-    effStep = 0;
-    effect = (effect + 1) % effects;
-    effStart = millis();
-  }
-};
-
-struct Loop
-{
-  uint8_t currentChild;
-  uint8_t childs;
-  bool timeBased;
-  uint16_t cycles;
-  uint16_t currentTime;
-  Loop(uint8_t totchilds, bool timebased, uint16_t tottime) {currentTime=0;currentChild=0;childs=totchilds;timeBased=timebased;cycles=tottime;}
-};
-
-Strip strip_0(120, 6, 120, NEO_GRB + NEO_KHZ800);
-struct Loop strip0loop0(1, false, 1);
-
-//[GLOBAL_VARIABLES]
-
-void setup() {
-
-  //Your setup here:
-
-  strip_0.strip.begin();
-}
-
-void loop() {
-
-  //Your code here:
-
-  strips_loop();
-}
-
-void strips_loop() {
-  if(strip0_loop0() & 0x01)
+void strip_animation(int animation) {
+  if (animation == 0) {
+    // TUE XY
+    if(strip0_loop0() & 0x01)
     strip_0.strip.show();
+  } else if (animation == 1) {
+    // TUE YX
+  } else if (animation == 2) {
+    // TUE XX
+  } else if (animation == 3) {
+    // TUE YY
+  }
 }
 
 uint8_t strip0_loop0() {
