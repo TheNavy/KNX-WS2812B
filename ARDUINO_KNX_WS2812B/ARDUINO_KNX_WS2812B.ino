@@ -27,11 +27,14 @@ Dimmer endAnimation;
 DoorOpenClose tor;
 
 bool tor_status = false; // Fährt der Motor?
+bool tor_status_disable = false; // Deaktiviert den Torstatus (Tor bleibt länger aktiv!)
+unsigned long tor_statusMillis = 0;
 bool nacht = false; // Ist Nacht?
 bool moving = false; // True sobald er feststellt, dass der Motor fährt (für Zeitfunktion)
 const int torFahrzeit = 15000; // Fahrdauer des Tors
 unsigned long startMillis = 0; // Startzeit des Tores
 const int torTotzeit = 2000; // Pausiert die Sensoren die ersten 2 Sekunden
+const int tor_statusTotzeit = 60000;
 
 
 
@@ -109,7 +112,7 @@ void loop() {
   pinStatus();
 
   // Wenn der Motor anfängt zu fahren & dies noch nicht registriert wurde
-  if ((tor_status) && (!moving)) {
+  if ((tor_status) && (!moving)  && (!tor_status_disable)) {
     moving = true;
     startMillis = millis();    
   }
@@ -123,15 +126,28 @@ void loop() {
         //Wenn Tor ZU
         moving = false;
         endAnimation = dimDown;
+        tor_status_disable = true;
+        tor_statusMillis = millis();
       } else if (tor == open) {
         //Wenn Tor AUF
         moving = false;
         endAnimation = dimUp;
+        tor_status_disable = true;
+        tor_statusMillis = millis();
       } else if (currentMillis - startMillis >= torFahrzeit) {
         // Wenn Fahrzeit überschritten
         moving = false;
         endAnimation = dimDown;
+        tor_status_disable = true;
+        tor_statusMillis = millis();
       }
+    }
+  }
+
+  if (tor_status_disable) {
+    unsigned long currentMillis = millis();
+    if (currentMillis - tor_statusMillis >= tor_statusTotzeit) {
+      tor_status_disable = false;
     }
   }
 
