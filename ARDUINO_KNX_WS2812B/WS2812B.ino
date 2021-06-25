@@ -12,35 +12,27 @@
  * numCycles = Number of animation cycles. 0 = looping until reset.
  */
 uint8_t strip_animation(uint8_t animation, struct Loop &loop) {
-  uint8_t ret = 0;
+  uint8_t ret = 0x00;
   
   switch(animation) {
     case 0:
       strip0_loop0_reset(); 
-      ret = 1;
+      ret = 0x01;
       break;
     case 1:
-      //ret = strip0_loop0_eff1();
 	    ret = strip0_loop0_eff1(loop);
       strip_0.strip.show();
       break;
     case 2:
-      //ret = strip0_loop0_eff2();
 	    ret = strip0_loop0_eff2(loop);
       strip_0.strip.show();
       break;
     case 3:
-      //ret = strip0_loop0_eff3();
 	    ret = strip0_loop0_eff3(loop);
       strip_0.strip.show();
       break;
   }
-  /*
-  if (ret == 1) {
-    ret = 0;
-    return 1;    
-  }
-  */
+  return ret;
 }
 
 uint8_t strip0_loop0_eff1(struct Loop &loop) {
@@ -173,11 +165,4 @@ void strip0_loop0_reset() {
 
   // Reset strip values
   strip_0.Reset();
-
-	// Keine ahnung ob das benötigt wird
-	/*
-	uint32_t black = strip_0.strip.Color(0, 0, 0);
-    strip_0.strip.fill(black, 0, 120);
-    strip_0.strip.show();    
-	*/
 }
