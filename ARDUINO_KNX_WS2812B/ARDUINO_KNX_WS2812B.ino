@@ -102,11 +102,11 @@ void setup() {
 }
 
 void loop() {
+  // DEV-Funktion
+  //tor_status = true;
+  
   // Die I/O Pins abfragen
   pinStatus();
-
-  // Den KNX-BUS abfragen
-  knxRead();
 
   // Wenn der Motor anfängt zu fahren & dies noch nicht registriert wurde
   if ((tor_status) && (!moving)) {
@@ -117,7 +117,7 @@ void loop() {
   // Wenn der Motor fährt
   if (moving) {
     unsigned long currentMillis = millis();
-    strip_animation(1, strip0LoopEndless);
+    strip_animation(3, strip0LoopEndless);
     if (currentMillis - startMillis >= torTotzeit) {
       if (tor == close) {
         //Wenn Tor ZU
@@ -138,7 +138,7 @@ void loop() {
   // Wenn das Tor fertig gefahren ist
   if (endAnimation == dimDown) {
     // Tor runterdimmen
-    if (strip_animation(3, strip0LoopOnce) == 1) {
+    if (strip_animation(1, strip0LoopOnce) == 1) {
       endAnimation = off;
     }
   } else if (endAnimation == dimUp) {
