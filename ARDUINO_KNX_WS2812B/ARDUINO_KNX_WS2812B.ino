@@ -75,10 +75,6 @@ Strip strip_0(120, 6, 120, NEO_GRB + NEO_KHZ800);
 struct Loop strip0LoopEndless(0);
 struct Loop strip0LoopOnce(1);
 
-//struct Loop strip0loop0(3, false, 1);
-//struct Loop strip0loop00(1, false, 1);
-//struct Loop strip0loop01(1, false, 1);
-
 void setup() {
   // LED-Pin als Output definieren und ausschalten
   pinMode(ledPin, OUTPUT);

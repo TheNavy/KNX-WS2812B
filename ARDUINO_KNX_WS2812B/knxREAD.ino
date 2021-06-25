@@ -1,4 +1,4 @@
-void knxRead() {
+void serialEvent() {
   KnxTpUartSerialEventType eType = knx.serialEvent();
   if (eType == TPUART_RESET_INDICATION) {
   } 
@@ -18,19 +18,21 @@ void knxRead() {
       if (target == "1/6/2") {
         int received_1_6_2 = telegram->getBool();
         if (received_1_6_2) {
+          tor_status = true;
           digitalWrite(ledPin, HIGH);
         }
         else {
-          // TODO XY
+          tor_status = false;
         }
       }
       if (target == "1/6/3") {
         int received_1_6_3 = telegram->getBool();
         if (received_1_6_3) {
+          nacht = true;
           digitalWrite(ledPin, LOW);
         }
         else {
-          // TODO XY
+          nacht = false;
         }
       }
     }
