@@ -87,12 +87,11 @@ void setup() {
   // KNX-Bus starten
   Serial.begin(19200, SERIAL_8E1);
   knx.uartReset();
+  
 
   knx.addListenGroupAddress("1/6/2"); //KNX-Adresse TOR
   knx.addListenGroupAddress("1/6/3"); //KNX-Adresse NACHT
 
-
-  delay(1000);
 
   // WS2812B-LEDs Starten
   strip_0.strip.begin();
@@ -106,6 +105,8 @@ void loop() {
   
   // Die I/O Pins abfragen
   pinStatus();
+
+  serialEvent();
 
   // Wenn der Motor anfängt zu fahren & dies noch nicht registriert wurde
   if ((tor_status) && (!moving)  && (!tor_status_disable)) {
