@@ -36,8 +36,6 @@ unsigned long startMillis = 0; // Startzeit des Tores
 const int torTotzeit = 2000; // Pausiert die Sensoren die ersten 2 Sekunden
 const int tor_statusTotzeit = 60000;
 
-
-
 // Initialize WS2812B-LED-Strip
 class Strip
 {
@@ -65,8 +63,8 @@ struct Loop
   uint8_t numberOfCycles;
   uint8_t currentCycle;
 
-  Loop(uint8_t numberOfCycles) {
-    numberOfCycles = numberOfCycles; 
+  Loop(uint8_t newnumberOfCycles) {
+    numberOfCycles = newnumberOfCycles; 
     currentCycle = 0;
   }
 };
@@ -87,11 +85,10 @@ void setup() {
   // KNX-Bus starten
   Serial.begin(19200, SERIAL_8E1);
   knx.uartReset();
+  delay(1000);
   
-
   knx.addListenGroupAddress("1/6/2"); //KNX-Adresse TOR
   knx.addListenGroupAddress("1/6/3"); //KNX-Adresse NACHT
-
 
   // WS2812B-LEDs Starten
   strip_0.strip.begin();
@@ -105,9 +102,7 @@ void loop() {
   
   // Die I/O Pins abfragen
   pinStatus();
-
-  serialEvent();
-
+  
   // Wenn der Motor anfängt zu fahren & dies noch nicht registriert wurde
   if ((tor_status) && (!moving)  && (!tor_status_disable)) {
     moving = true;
@@ -141,6 +136,7 @@ void loop() {
     }
   }
 
+  // Wenn der Motor gefahren ist das Tor aber noch aktiv ist
   if (tor_status_disable) {
     unsigned long currentMillis = millis();
     if (currentMillis - tor_statusMillis >= tor_statusTotzeit) {
@@ -151,15 +147,15 @@ void loop() {
   // Wenn das Tor fertig gefahren ist
   if (endAnimation == dimDown) {
     // Tor runterdimmen
-    if (strip_animation(1, strip0LoopOnce) == 1) {
+    if (strip_animation(1, strip0LoopOnce) & 0x01) {
       endAnimation = off;
+      strip_animation(1, strip0LoopOnce);
     }
   } else if (endAnimation == dimUp) {
-    if (strip_animation(2, strip0LoopOnce) == 1) {
+    if (strip_animation(2, strip0LoopOnce) & 0x01) {
       endAnimation = off;
     }
   }
-
 
  // Nacht-Licht
  if ((!moving) && (endAnimation == off) && (tor == close)) {
