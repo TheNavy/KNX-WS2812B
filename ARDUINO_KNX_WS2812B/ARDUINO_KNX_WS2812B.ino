@@ -45,7 +45,7 @@ public:
   uint16_t  effStep;
   unsigned long effStart;
   Adafruit_NeoPixel strip;
-  Strip(uint16_t leds, uint8_t pin, uint8_t toteffects, uint16_t striptype) : strip(leds, pin, striptype) {
+  Strip(uint16_t leds, uint8_t pin, uint16_t toteffects, uint16_t striptype) : strip(leds, pin, striptype) {
     effect = -1;
     effects = toteffects;
     Reset();
@@ -69,7 +69,7 @@ struct Loop
   }
 };
 
-Strip strip_0(120, 6, 120, NEO_GRB + NEO_KHZ800);
+Strip strip_0(300, 6, 300, NEO_GRB + NEO_KHZ800);
 struct Loop strip0LoopEndless(0);
 struct Loop strip0LoopOnce(1);
 
@@ -92,13 +92,14 @@ void setup() {
 
   // WS2812B-LEDs Starten
   strip_0.strip.begin();
+  strip_0.strip.setBrightness(128);
   strip_0.strip.show();
 
 }
 
 void loop() {
   // DEV-Funktion
-  //tor_status = true;
+  tor_status = true;
   
   // Die I/O Pins abfragen
   pinStatus();
@@ -112,7 +113,7 @@ void loop() {
   // Wenn der Motor fährt
   if (moving) {
     unsigned long currentMillis = millis();
-    strip_animation(3, strip0LoopEndless);
+    strip_animation(1, strip0LoopEndless);
     if (currentMillis - startMillis >= torTotzeit) {
       if (tor == close) {
         //Wenn Tor ZU
@@ -147,12 +148,12 @@ void loop() {
   // Wenn das Tor fertig gefahren ist
   if (endAnimation == dimDown) {
     // Tor runterdimmen
-    if (strip_animation(1, strip0LoopOnce) & 0x01) {
+    if (strip_animation(2, strip0LoopOnce) & 0x01) {
       endAnimation = off;
-      strip_animation(1, strip0LoopOnce);
+      strip_animation(0, strip0LoopOnce);
     }
   } else if (endAnimation == dimUp) {
-    if (strip_animation(2, strip0LoopOnce) & 0x01) {
+    if (strip_animation(3, strip0LoopOnce) & 0x01) {
       endAnimation = off;
     }
   }
